@@ -2,36 +2,46 @@
 /**
  * Add an options page. We want to define a template parts directory and a
  * file prefix that identifies template parts as such.
+ *
+ * @package SPB2
  */
 
-// Exit if accessed directly
+namespace SPB2;
+
+// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-
-class WDS_Page_Builder_Options {
+/**
+ * SPB2 Options class.
+ */
+class Options {
 
 	/**
 	 * Option key, and option page slug
+	 *
 	 * @var string
 	 */
-	private $key = 'wds_page_builder_options';
+	private $key = 'spb2_options';
 
 	/**
 	 * Options page metabox id
+	 *
 	 * @var string
 	 */
-	private $metabox_id = 'wds_page_builder_option_metabox';
+	private $metabox_id = 'spb2_option_metabox';
 
 	/**
 	 * Options Page title
+	 *
 	 * @var string
 	 */
 	protected $title = '';
 
 	/**
 	 * Options Page hook
+	 *
 	 * @var string
 	 */
 	protected $options_page = '';
@@ -42,17 +52,20 @@ class WDS_Page_Builder_Options {
 
 	/**
 	 * Constructor
+	 *
+	 * @param object $plugin The plugin instance.
 	 * @since 0.1.0
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
 
-		// Set our title
-		$this->title   = apply_filters( 'wds_page_builder_options_title', __( 'Options', 'wds-simple-page-builder' ) );
+		// Set our title.
+		$this->title = apply_filters( 'spb2_options_title', __( 'Options', 'simple-page-builder' ) );
 	}
 
 	/**
 	 * Register our setting to WP
+	 *
 	 * @since  0.1.0
 	 */
 	public function init() {
@@ -60,6 +73,9 @@ class WDS_Page_Builder_Options {
 		add_filter( "pre_update_option_{$this->key}", array( $this, 'prevent_blank_templates' ), 10, 2 );
 	}
 
+	/**
+	 * All our hooks.
+	 */
 	public function hooks() {
 		add_action( 'admin_init', array( $this, 'init' ) );
 		add_action( 'admin_menu', array( $this, 'add_options_page' ) );
@@ -67,13 +83,14 @@ class WDS_Page_Builder_Options {
 			add_action( 'cmb2_init', array( $this, 'add_options_page_metabox' ) );
 		}
 		add_action( 'wds_register_page_builder_options', array( $this, 'register_settings' ) );
-		add_action( 'wds_page_builder_add_theme_support', array( $this, 'add_theme_support' ) );
+		add_action( 'spb2_add_theme_support', array( $this, 'add_theme_support' ) );
 	}
 
 	/**
 	 * Registers the settings via wds_register_page_builder_options
+	 *
 	 * @since  1.5
-	 * @param  array  $args The options to update/register
+	 * @param  array $options The options to update/register.
 	 * @return void
 	 */
 	public function register_settings( $options = array() ) {
@@ -105,30 +122,43 @@ class WDS_Page_Builder_Options {
 
 
 	/**
-	 * get_parts_dir function.
+	 * Get parts directory.
 	 *
-	 * set up parts dir
+	 * Set up parts dir
+	 *
 	 * @access public
 	 * @return string
 	 */
 	public function get_parts_dir() {
 		$directory = $this->get( 'parts_dir', 'parts' );
-		return apply_filters( 'wds_page_builder_parts_directory', $directory );
+		return apply_filters( 'spb2_parts_directory', $directory );
 	}
 
+	/**
+	 * Get parts path.
+	 *
+	 * @return string The path to the parts directory.
+	 */
 	public function get_parts_path() {
 		$path = get_template_directory() . '/' . $this->get_parts_dir() . '/';
-		return apply_filters( 'wds_page_builder_parts_path', $path );
+		return apply_filters( 'spb2_parts_path', $path );
 	}
 
+	/**
+	 * Get parts prefix.
+	 *
+	 * @return string The prefix used on template parts.
+	 */
 	public function get_parts_prefix() {
 		$prefix = $this->get( 'parts_prefix', 'part' );
-		return apply_filters( 'wds_page_builder_parts_prefix', $prefix );
+		return apply_filters( 'spb2_parts_prefix', $prefix );
 	}
 
 	/**
 	 * Get the Page Builder options
-	 * @return array The Page Builder options array
+	 *
+	 * @param  bool $reset Whether to reset the option.
+	 * @return array       The Page Builder options array
 	 */
 	public function get_all( $reset = false ) {
 		if ( ! is_null( $this->options ) && ! $reset ) {
@@ -142,6 +172,7 @@ class WDS_Page_Builder_Options {
 
 	/**
 	 * Get an option from the option array
+	 *
 	 * @since  1.6
 	 * @param  string $key     The option to get from the array.
 	 * @param  mixed  $default Optional. Default value to return if the option does not exist.
@@ -159,6 +190,7 @@ class WDS_Page_Builder_Options {
 	/**
 	 * Hooks to pre_update_option_{option name} to prevent empty templates from being saved
 	 * to the Saved Layouts
+	 *
 	 * @param  mixed $new_value The new value.
 	 * @param  mixed $old_value The old value.
 	 * @return mixed            The filtered setting
@@ -167,7 +199,7 @@ class WDS_Page_Builder_Options {
 	 */
 	public function prevent_blank_templates( $new_value, $old_value ) {
 		$saved_layouts = $new_value['parts_saved_layouts'];
-		if( empty( $saved_layouts ) ) {
+		if ( empty( $saved_layouts ) ) {
 			return $new_value;
 		}
 		$i = 0;
@@ -183,13 +215,14 @@ class WDS_Page_Builder_Options {
 
 	/**
 	 * Support WordPress add_theme_support feature
+	 *
 	 * @since  1.5
 	 * @uses   current_theme_supports
 	 * @param  array $args            Array of Page Builder options to set.
 	 * @link   http://justintadlock.com/archives/2010/11/01/theme-supported-features
 	 */
 	public function add_theme_support( $args ) {
-		if ( current_theme_supports( 'wds-simple-page-builder' ) ) {
+		if ( current_theme_supports( 'simple-page-builder' ) ) {
 			wds_register_page_builder_options( $args );
 		}
 	}
@@ -197,30 +230,32 @@ class WDS_Page_Builder_Options {
 
 	/**
 	 * Add menu options page
+	 *
 	 * @since 0.1.0
 	 */
 	public function add_options_page() {
-		add_menu_page( __( 'Page Builder', 'wds-simple-page-builder' ), __( 'Page Builder', 'wds-simple-page-builder' ), 'edit_posts', 'edit.php?post_type=wds_pb_layouts', '', 'dashicons-list-view' );
-		$this->options_page = add_submenu_page( 'edit.php?post_type=wds_pb_layouts', $this->title, __( 'Page Builder Options', 'wds-simple-page-builder' ), 'manage_options', $this->key, array( $this, 'admin_page_display' ) );
+		add_menu_page( __( 'Page Builder', 'simple-page-builder' ), __( 'Page Builder', 'simple-page-builder' ), 'edit_posts', 'edit.php?post_type=spb2_layouts', '', 'dashicons-list-view' );
+		$this->options_page = add_submenu_page( 'edit.php?post_type=spb2_layouts', $this->title, __( 'Page Builder Options', 'simple-page-builder' ), 'manage_options', $this->key, array( $this, 'admin_page_display' ) );
 		// Include CMB CSS in the head to avoid FOUT.
 		add_action( "admin_print_styles-{$this->options_page}", array( 'CMB2_hookup', 'enqueue_cmb_css' ) );
 	}
 
 	/**
 	 * Admin page markup. Mostly handled by CMB2
+	 *
 	 * @since  0.1.0
 	 */
 	public function admin_page_display() {
 		// Enqueue our JS in the footer.
-		wp_enqueue_script( 'wds-simple-page-builder-admin', $this->plugin->directory_url . '/assets/js/admin.js', array( 'jquery' ), WDS_Simple_Page_Builder::VERSION, true );
+		wp_enqueue_script( 'simple-page-builder-admin', $this->plugin->directory_url . '/assets/js/admin.js', array( 'jquery' ), SPB2::VERSION, true );
 		$tab = isset( $_GET['tab'] ) ? $_GET['tab'] : 'settings';
 		?>
 		<div class="wrap cmb2_options_page <?php echo $this->key; ?>">
 			<h2><?php echo esc_html( get_admin_page_title() ); ?></h2>
 
 			<h3 class="nav-tab-wrapper">
-				<a href="<?php echo esc_url( remove_query_arg( 'tab' ) ); ?>" class="nav-tab <?php echo $tab == 'settings' ? 'nav-tab-active' : ''; ?>"><?php _e( 'Settings', 'wds-simple-page-builder' ); ?></a>
-				<a href="<?php echo esc_url( add_query_arg( array( 'tab' => 'default-area-layouts' ) ) ); ?>" class="nav-tab <?php echo $tab == 'default-area-layouts' ? 'nav-tab-active' : ''; ?>"><?php _e( 'Global Area Layouts', 'wds-simple-page-builder' ); ?></a>
+				<a href="<?php echo esc_url( remove_query_arg( 'tab' ) ); ?>" class="nav-tab <?php echo $tab == 'settings' ? 'nav-tab-active' : ''; ?>"><?php _e( 'Settings', 'simple-page-builder' ); ?></a>
+				<a href="<?php echo esc_url( add_query_arg( array( 'tab' => 'default-area-layouts' ) ) ); ?>" class="nav-tab <?php echo $tab == 'default-area-layouts' ? 'nav-tab-active' : ''; ?>"><?php _e( 'Global Area Layouts', 'simple-page-builder' ); ?></a>
 			</h3>
 			<?php
 			if ( 'settings' === $tab ) {
@@ -240,9 +275,10 @@ class WDS_Page_Builder_Options {
 
 	/**
 	 * Add the options metabox to the array of metaboxes
+	 *
 	 * @since  0.1.0
 	 */
-	function add_options_page_metabox() {
+	public function add_options_page_metabox() {
 
 		$disabled = ( isset( $this->options['hide_options'] ) && 'disabled' == $this->options['hide_options'] ) ? array( 'disabled' => '' ) : array();
 
@@ -256,34 +292,29 @@ class WDS_Page_Builder_Options {
 			),
 		) );
 
-		// @todo depricate this
-		if ( PAGEBUILDER_VERSION < 1.6 ) {
-
-			$cmb->add_field( array(
-				'name'       => __( 'Template Parts Directory', 'wds-simple-page-builder' ),
-				'desc'       => __( 'Where the template parts are located in the theme. Default is /parts', 'wds-simple-page-builder' ),
-				'id'         => 'parts_dir',
-				'type'       => 'text_small',
-				'default'    => 'parts',
-				'show_on_cb' => array( $this, 'show_parts_dir' ),
-				'attributes' => $disabled,
-			) );
-
-			$cmb->add_field( array(
-				'name'       => __( 'Template Parts Prefix', 'wds-simple-page-builder' ),
-				'desc'       => __( 'File prefix that identifies template parts. Default is part-', 'wds-simple-page-builder' ),
-				'id'         => 'parts_prefix',
-				'type'       => 'text_small',
-				'default'    => 'part',
-				'show_on_cb' => array( $this, 'show_parts_prefix' ),
-				'attributes' => $disabled,
-			) );
-
-		}
+		$cmb->add_field( array(
+			'name'       => __( 'Template Parts Directory', 'simple-page-builder' ),
+			'desc'       => __( 'Where the template parts are located in the theme. Default is /parts', 'simple-page-builder' ),
+			'id'         => 'parts_dir',
+			'type'       => 'text_small',
+			'default'    => 'parts',
+			'show_on_cb' => array( $this, 'show_parts_dir' ),
+			'attributes' => $disabled,
+		) );
 
 		$cmb->add_field( array(
-			'name'       => __( 'Use Wrapper', 'wds-simple-page-builder' ),
-			'desc'       => __( 'If checked, a wrapper HTML container will be added around each individual template part.', 'wds-simple-page-builder' ),
+			'name'       => __( 'Template Parts Prefix', 'simple-page-builder' ),
+			'desc'       => __( 'File prefix that identifies template parts. Default is part-', 'simple-page-builder' ),
+			'id'         => 'parts_prefix',
+			'type'       => 'text_small',
+			'default'    => 'part',
+			'show_on_cb' => array( $this, 'show_parts_prefix' ),
+			'attributes' => $disabled,
+		) );
+
+		$cmb->add_field( array(
+			'name'       => __( 'Use Wrapper', 'simple-page-builder' ),
+			'desc'       => __( 'If checked, a wrapper HTML container will be added around each individual template part.', 'simple-page-builder' ),
 			'id'         => 'use_wrap',
 			'type'       => 'checkbox',
 			'show_on_cb' => array( $this, 'show_use_wrap' ),
@@ -291,15 +322,15 @@ class WDS_Page_Builder_Options {
 		) );
 
 		$cmb->add_field( array(
-			'name'       => __( 'Container Type', 'wds-simple-page-builder' ),
-			'desc'       => __( 'The type of HTML container wrapper to use, if Use Wrapper is selected.', 'wds-simple-page-builder' ),
+			'name'       => __( 'Container Type', 'simple-page-builder' ),
+			'desc'       => __( 'The type of HTML container wrapper to use, if Use Wrapper is selected.', 'simple-page-builder' ),
 			'id'         => 'container',
 			'type'       => 'select',
 			'options'    => array(
-				'section' => __( 'Section', 'wds-simple-page-builder' ),
-				'div'     => __( 'Div', 'wds-simple-page-builder' ),
-				'aside'   => __( 'Aside', 'wds-simple-page-builder' ),
-				'article' => __( 'Article', 'wds-simple-page-builder' ),
+				'section' => __( 'Section', 'simple-page-builder' ),
+				'div'     => __( 'Div', 'simple-page-builder' ),
+				'aside'   => __( 'Aside', 'simple-page-builder' ),
+				'article' => __( 'Article', 'simple-page-builder' ),
 			),
 			'default'    => 'section',
 			'show_on_cb' => array( $this, 'show_container' ),
@@ -307,8 +338,9 @@ class WDS_Page_Builder_Options {
 		) );
 
 		$cmb->add_field( array(
-			'name'       => __( 'Container Class', 'wds-simple-page-builder' ),
-			'desc'       => sprintf( __( '%1$sThe default class to use for all template part wrappers. Specific classes will be added to each wrapper in addition to this. %2$sMultiple classes, separated by a space, can be added here.%3$s', 'wds-simple-page-builder' ), '<p>', '<br />', '</p>' ),
+			'name'       => __( 'Container Class', 'simple-page-builder' ),
+			// Translators: 1, 2 and 3 are all HTML elements.
+			'desc'       => sprintf( __( '%1$sThe default class to use for all template part wrappers. Specific classes will be added to each wrapper in addition to this. %2$sMultiple classes, separated by a space, can be added here.%3$s', 'simple-page-builder' ), '<p>', '<br />', '</p>' ),
 			'id'         => 'container_class',
 			'type'       => 'text_medium',
 			'default'    => 'pagebuilder-part',
@@ -317,8 +349,8 @@ class WDS_Page_Builder_Options {
 		) );
 
 		$cmb->add_field( array(
-			'name'       => __( 'Allowed Post Types', 'wds-simple-page-builder' ),
-			'desc'       => __( 'Post types that can use the page builder. Default is Page.', 'wds-simple-page-builder' ),
+			'name'       => __( 'Allowed Post Types', 'simple-page-builder' ),
+			'desc'       => __( 'Post types that can use the page builder. Default is Page.', 'simple-page-builder' ),
 			'id'         => 'post_types',
 			'type'       => 'multicheck',
 			'default'    => 'page',
@@ -331,12 +363,13 @@ class WDS_Page_Builder_Options {
 
 	/**
 	 * Get an array of post types for the options page multicheck array
+	 *
 	 * @uses   get_post_types
-	 * @return array 			An array of public post types
+	 * @return array          An array of public post types
 	 */
 	public function get_post_types() {
 
-		$post_types = apply_filters( 'wds_page_builder_post_types', get_post_types( array( 'public' => true ), 'objects' ) );
+		$post_types = apply_filters( 'spb2_post_types', get_post_types( array( 'public' => true ), 'objects' ) );
 
 		foreach ( $post_types as $post_type ) {
 			$types[ $post_type->name ] = $post_type->labels->name;
@@ -355,26 +388,26 @@ class WDS_Page_Builder_Options {
 
 		$stack = spb_get_template_stack();
 
-		// if in admin refresh glob transient
-		if ( is_admin() ) { 
+		// If in admin refresh glob transient.
+		if ( is_admin() ) {
 			delete_transient( 'spb_part_glob' );
 		}
 
-		// check for glob transient and if return instead of re-glob
+		// Check for glob transient and if return instead of re-glob.
 		if ( $parts = get_transient( 'spb_part_glob' ) ) {
 			return $parts;
 		}
 
 		$parts = array();
 
-		// loop through stack and gobble up the templates, yum!
+		// Loop through stack and gobble up the templates, yum!
 		foreach ( $stack as $item ) {
 			array_push( $parts, glob( $item . '*.php', GLOB_NOSORT ) );
 		}
 
 		$parts = call_user_func_array( 'array_merge', $parts );
 
-		// stash glob results in a transient
+		// Stash glob results in a transient.
 		set_transient( 'spb_part_glob', $parts, 365 * DAY_IN_SECONDS );
 
 		return $parts;
@@ -382,12 +415,12 @@ class WDS_Page_Builder_Options {
 
 
 	/**
-	 * get_parts function.
+	 * Get parts.
 	 *
 	 * @access public
-	 * @return void
+	 * @return array The parts.
 	 */
-	public function get_parts( ) {
+	public function get_parts() {
 
 		if ( ! $this->parts ) {
 			$files = $this->get_part_files();
@@ -434,32 +467,32 @@ class WDS_Page_Builder_Options {
 
 
 	/**
-	 * get_part_data function.
+	 * Get part data.
 	 *
 	 * @access public
-	 * @param mixed $slug
-	 * @return void
+	 * @param mixed $slug The slug for the part to get data from.
+	 * @return string     The part data.
 	 */
 	public function get_part_data( $slug ) {
 		$parts = $this->get_parts();
-		return isset( $parts[$slug] ) ? $parts[$slug] : false;
+		return isset( $parts[ $slug ] ) ? $parts[ $slug ] : false;
 	}
 
 
 	/**
-	 * get_parts_select function.
+	 * Get parts select
 	 *
 	 * @access public
-	 * @return void
+	 * @return array An array of options.
 	 */
 	public function get_parts_select() {
 		$parts = $this->get_parts();
 		$options = array(
-			// add a generic 'none' option
-			'none' => __( '- No Template Parts -', 'wds-simple-page-builder' ),
+			// Add a generic 'none' option.
+			'none' => __( '- No Template Parts -', 'simple-page-builder' ),
 		);
 		foreach ( $parts as $key => $part ) {
-			$options[$key] = $part['name'];
+			$options[ $key ] = $part['name'];
 		}
 
 		return $options;
@@ -467,12 +500,14 @@ class WDS_Page_Builder_Options {
 
 	/**
 	 * Public getter method for retrieving protected/private variables
+	 *
 	 * @since  0.1.0
-	 * @param  string  $field Field to retrieve
-	 * @return mixed          Field value or exception is thrown
+	 * @param  string $field Field to retrieve.
+	 * @return mixed         Field value or exception is thrown
+	 * @throws Exception     Invalid property if no field found.
 	 */
 	public function __get( $field ) {
-		// Allowed fields to retrieve
+		// Allowed fields to retrieve.
 		if ( in_array( $field, array( 'key', 'metabox_id', 'title', 'options_page' ), true ) ) {
 			return $this->{$field};
 		}
@@ -482,8 +517,9 @@ class WDS_Page_Builder_Options {
 
 	/**
 	 * Helper proxy method for the CMB2 show_on callbacks.
+	 *
 	 * @since  1.5
-	 * @param  string $check Key to check for show_on_cb
+	 * @param  string $check Key to check for show_on_cb.
 	 * @return bool          Whether to show or hide the option.
 	 */
 	protected function check_if_show( $check ) {
@@ -496,6 +532,7 @@ class WDS_Page_Builder_Options {
 
 	/**
 	 * CMB2 show_on callback function for parts_dir option.
+	 *
 	 * @since  1.5
 	 * @return bool Whether to show or hide the option.
 	 */
@@ -505,6 +542,7 @@ class WDS_Page_Builder_Options {
 
 	/**
 	 * CMB2 show_on callback function for parts_prefix option.
+	 *
 	 * @since  1.5
 	 * @return bool Whether to show or hide the option.
 	 */
@@ -514,6 +552,7 @@ class WDS_Page_Builder_Options {
 
 	/**
 	 * CMB2 show_on callback function for use_wrap option.
+	 *
 	 * @since  1.5
 	 * @return bool Whether to show or hide the option.
 	 */
@@ -523,6 +562,7 @@ class WDS_Page_Builder_Options {
 
 	/**
 	 * CMB2 show_on callback function for container option.
+	 *
 	 * @since  1.5
 	 * @return bool Whether to show or hide the option.
 	 */
@@ -532,6 +572,7 @@ class WDS_Page_Builder_Options {
 
 	/**
 	 * CMB2 show_on callback function for container_class option.
+	 *
 	 * @since  1.5
 	 * @return bool Whether to show or hide the option.
 	 */
@@ -541,6 +582,7 @@ class WDS_Page_Builder_Options {
 
 	/**
 	 * CMB2 show_on callback function for post_types option.
+	 *
 	 * @since  1.5
 	 * @return bool Whether to show or hide the option.
 	 */

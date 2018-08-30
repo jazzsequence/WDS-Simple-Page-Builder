@@ -2,35 +2,39 @@
 /**
  * Template Tags
  * Public functions that can be used in themes and plugins.
- * @package WDS Simple Page Builder
+ *
+ * @package SPB2
  */
+
+namespace SPB2;
 
 /**
  * Helper function for loading a single template part
+ *
  * @since  1.3
  * @param  string $part The part slug.
  * @return null
  */
-function wds_page_builder_load_part( $part = '' ) {
+function spb2_load_part( $part = '' ) {
 	// Bail if no part was specified.
 	if ( '' == $part ) {
 		return;
 	}
 
-	wds_page_builder()->functions->load_part( array( 'template_group' => $part ) );
+	spb2()->functions->load_part( array( 'template_group' => $part ) );
 }
 
 /**
  * Gets an array of page builder parts.
  *
  * Note, this function ONLY returns values AFTER the parts have been loaded, so hook into
- * wds_page_builder_after_load_parts or later for this to be populated.
+ * spb2_after_load_parts or later for this to be populated.
  *
  * @since  1.5
  * @return array An array of template parts in use on the page
  */
 function get_page_builder_parts() {
-	return wds_page_builder()->functions->page_builder_parts();
+	return spb2()->functions->page_builder_parts();
 }
 
 /**
@@ -47,15 +51,16 @@ function register_page_builder_area( $slug = '', $name = '', $templates = array(
 		return;
 	}
 
-	wds_page_builder()->areas->register_area( $slug, $name, $templates );
+	spb2()->areas->register_area( $slug, $name, $templates );
 }
 
 /**
  * Gets the page builder areas
+ *
  * @return mixed False if there are no areas or an array of layouts if there's more than one.
  */
 function get_page_builder_areas() {
-	$areas = wds_page_builder()->areas->get_registered_areas();
+	$areas = spb2()->areas->get_registered_areas();
 
 	if ( ! $areas ) {
 		return false;
@@ -66,13 +71,14 @@ function get_page_builder_areas() {
 
 /**
  * Function that can be used to return a specific page builder area
+ *
  * @param  string  $area    The area by slug/name.
  * @param  integer $post_id Optional. The post id. If none is passed, we will try to get one if
  *                          it's necessary.
  * @return void
  */
 function get_page_builder_area( $area = '', $post_id = 0 ) {
-	wds_page_builder()->areas->get_area( $area, $post_id );
+	spb2()->areas->get_area( $area, $post_id );
 }
 
 /**
@@ -84,8 +90,8 @@ function get_page_builder_area( $area = '', $post_id = 0 ) {
  * @todo                    Add support for custom container elements and classes.
  * @return void
  */
-function wds_page_builder_area( $area = 'page_builder_default', $post_id = 0 ) {
-	wds_page_builder()->areas->do_area( $area, $post_id );
+function spb2_area( $area = 'page_builder_default', $post_id = 0 ) {
+	spb2()->areas->do_area( $area, $post_id );
 }
 
 /**
@@ -116,7 +122,7 @@ function wds_register_page_builder_options( $args = array() ) {
 /**
  * Helper function to add Page Builder theme support
  *
- * Because theme features are all hard-coded, we can't pass arguments directly to  add_theme_supports (at least, not that I'm aware of...). This helper function MUST be used in combination with `add_theme_support( 'wds-simple-page-builder' )` in order to pass the correct values to the Page Builder options.
+ * Because theme features are all hard-coded, we can't pass arguments directly to  add_theme_supports (at least, not that I'm aware of...). This helper function MUST be used in combination with `add_theme_support( 'simple-page-builder' )` in order to pass the correct values to the Page Builder options.
  *
  * Possible $args values:
  *    'parts_dir'       The directory that template parts are saved in.
@@ -131,13 +137,13 @@ function wds_register_page_builder_options( $args = array() ) {
  * @param  array $args An array of arguments matching Page Builder settings in the options table.
  * @return void
  */
-function wds_page_builder_theme_support( $args = array() ) {
+function spb2_theme_support( $args = array() ) {
 	$defaults = array(
 		'hide_options'    => true,
 	);
 
 	$args = wp_parse_args( $args, $defaults );
-	do_action( 'wds_page_builder_add_theme_support', $args );
+	do_action( 'spb2_add_theme_support', $args );
 }
 
 /**
@@ -148,11 +154,11 @@ function wds_page_builder_theme_support( $args = array() ) {
  *
  * @return mixed|null       Null on failure or the value of the meta key on success.
  */
-function wds_page_builder_get_this_part_data( $meta_key ) {
-	$part_slug = wds_page_builder()->functions->get_part();
+function spb2_get_this_part_data( $meta_key ) {
+	$part_slug = spb2()->functions->get_part();
 
 	if ( $part_slug ) {
-		return wds_page_builder_get_part_data( $part_slug, $meta_key );
+		return spb2_get_part_data( $part_slug, $meta_key );
 	}
 
 	return null;
@@ -173,38 +179,41 @@ function wds_page_builder_get_this_part_data( $meta_key ) {
  *
  * @return null|mixed      Null on failure, the stored meta value on success.
  */
-function wds_page_builder_get_part_data( $part, $meta_key, $post_id = 0, $area = '' ) {
-	return wds_page_builder()->data->get( $part, $meta_key, $post_id, $area );
+function spb2_get_part_data( $part, $meta_key, $post_id = 0, $area = '' ) {
+	return spb2()->data->get( $part, $meta_key, $post_id, $area );
 }
 
 /**
- * Wrapper function around WDS_Page_Builder_Options::get()
+ * Wrapper function around Options::get()
+ *
  * @since  0.1.0
  * @param  string $key     Options array key.
  * @param  string $default A default value for the option.
  * @return mixed           Option value
  */
-function wds_page_builder_get_option( $key = '', $default = false ) {
-	return wds_page_builder()->options->get( $key, $default );
+function spb2_get_option( $key = '', $default = false ) {
+	return spb2()->options->get( $key, $default );
 }
 
 
 /**
  * Helper function to return the main page builder container element
+ *
  * @return string The class name
  */
-function wds_page_builder_container() {
-	$container = wds_page_builder_get_option( 'container' );
-	return esc_attr( apply_filters( 'wds_page_builder_container_class', $container ) );
+function spb2_container() {
+	$container = spb2_get_option( 'container' );
+	return esc_attr( apply_filters( 'spb2_container_class', $container ) );
 }
 
 /**
  * Helper function to return the main page builder container class
+ *
  * @return string The class name
  */
-function wds_page_builder_container_class() {
-	$class = wds_page_builder_get_option( 'container_class' );
-	return esc_attr( apply_filters( 'wds_page_builder_container_class', $class ) );
+function spb2_container_class() {
+	$class = spb2_get_option( 'container_class' );
+	return esc_attr( apply_filters( 'spb2_container_class', $class ) );
 }
 
 /**
@@ -212,32 +221,33 @@ function wds_page_builder_container_class() {
  *
  * @return array An array of template parts
  */
-function wds_page_builder_get_parts() {
-	$parts = wds_page_builder()->options->get_parts();
+function spb2_get_parts() {
+	$parts = spb2()->options->get_parts();
 
 	return $parts;
 }
 
 /**
  * Return a saved layout object by its slug.
- * Note: This only works with layouts created after 1.6.
+ *
  * @since  1.6.0
  * @param  string $layout_name The post slug of the pagebuilder layout.
  * @return object              The WP_Post object for the pagebuilder layout.
  */
 function get_saved_page_builder_layout_by_slug( $layout_name = '' ) {
-	return wds_page_builder()->areas->get_saved_layout_by_slug( $layout_name );
+	return spb2()->areas->get_saved_layout_by_slug( $layout_name );
 }
 
 /**
  * Return the last saved layout for a given area and post type.
+ *
  * @since  1.6.0
  * @param  string $area      The pagebuilder area to query by.
  * @param  string $post_type The post type of the post displaying the area.
  * @return array             A get_posts array of pagebuilder layouts.
  */
 function get_saved_page_builder_layout( $area = '', $post_type = '' ) {
-	return wds_page_builder()->areas->get_saved_layout( $area, $post_type );
+	return spb2()->areas->get_saved_layout( $area, $post_type );
 }
 
 /**
@@ -284,7 +294,7 @@ function spb_get_template_stack() {
 	} else {
 		$filter = &$wp_filter[ $tag ];
 
-		// Sort
+		// Sort.
 		if ( ! isset( $merged_filters[ $tag ] ) ) {
 			ksort( $filter );
 			$merged_filters[ $tag ] = true;
@@ -294,7 +304,7 @@ function spb_get_template_stack() {
 	// Ensure we're always at the beginning of the filter array.
 	reset( $wp_filter[ $tag ] );
 
-	// Loop through 'spb_template_stack' filters, and call callback functions
+	// Loop through 'spb_template_stack' filters, and call callback functions.
 	do {
 		foreach ( (array) current( $filter ) as $the_ ) {
 			if ( ! is_null( $the_['function'] ) ) {
@@ -329,7 +339,7 @@ function spb_get_template_stack() {
  */
 function has_page_builder_part( $template = null ) {
 
-	$parts = wds_page_builder()->areas->parts;
+	$parts = spb2()->areas->parts;
 
 	if ( in_array( $template, $parts ) ) {
 		return true;
@@ -350,8 +360,8 @@ function has_page_builder_part( $template = null ) {
  */
 function is_page_builder_page() {
 
-	if ( wds_page_builder()->areas->area ) {
-		return wds_page_builder()->areas->area;
+	if ( spb2()->areas->area ) {
+		return spb2()->areas->area;
 	}
 
 	return false;
@@ -366,8 +376,8 @@ function is_page_builder_page() {
  * @return array An array of Pagebuilder template parts.
  */
 function get_page_builder_part_files() {
-	if ( wds_page_builder()->options->get_part_files() ) {
-		return wds_page_builder()->options->get_part_files();
+	if ( spb2()->options->get_part_files() ) {
+		return spb2()->options->get_part_files();
 	}
 	return false;
 }

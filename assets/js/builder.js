@@ -6,8 +6,8 @@
 		var app = { $ : {} };
 
 		app.cache = function() {
-			app.$.box         = $( document.getElementById( 'cmb2-metabox-wds_simple_page_builder_' + value ) );
-			app.$.dropdowns   = app.$.box.find( '.wds-simple-page-builder-template-select' );
+			app.$.box         = $( document.getElementById( 'cmb2-metabox-spb2_' + value ) );
+			app.$.dropdowns   = app.$.box.find( '.simple-page-builder-template-select' );
 			app.$.postForm    = $( document.getElementById( 'post' ) );
 			app.$.hiddenParts = app.$.box.find( '.hidden-parts-fields' );
 		};
@@ -16,7 +16,7 @@
 			app.resetCacheAndHide();
 
 			app.$.box
-				.on( 'change', '.wds-simple-page-builder-template-select', app.maybeUnhide );
+				.on( 'change', '.simple-page-builder-template-select', app.maybeUnhide );
 
 			app.$.postForm
 				.on( 'submit', app.removeHidden );

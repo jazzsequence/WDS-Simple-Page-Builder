@@ -19,13 +19,13 @@ The Simple Page Builder is targeted at plugin and theme developers who want to p
 
 ## Development
 
-WDS Simple Page Builder uses the [Git Flow](http://nvie.com/posts/a-successful-git-branching-model/) branching model for development. If you're unfamiliar with Git Flow, you should [read that post now](http://nvie.com/posts/a-successful-git-branching-model/) to understand the theory before committing. There are two major branch streams and two branch types (the /release branches are not used) that Page Builder uses.
+SPB2 uses the [Git Flow](http://nvie.com/posts/a-successful-git-branching-model/) branching model for development. If you're unfamiliar with Git Flow, you should [read that post now](http://nvie.com/posts/a-successful-git-branching-model/) to understand the theory before committing. There are two major branch streams and two branch types (the /release branches are not used) that Page Builder uses.
 
-**```master```** This holds the latest **stable** branch and should always reflect the version that exists in the [WordPress.org plugins repository](https://wordpress.org/plugins/wds-simple-page-builder/).
+**```master```** This holds the latest **stable** release.
 
 **```develop```** Development for the next release is merged here. This isn't a bleeding-edge, broken firehose. Only stable, tested patches get merged into the ```develop``` branch so it can be used as a base for feature branches. Only pull requests submitted to the ```develop``` branch will be accepted. No pull requests for ```master``` will ever be merged.
 
-**```feature/{new_branch}```** All new features for Page Builder should be in feature branches. When creating a feature branch, prefix your branch name with ```feature/```, e.g. ```feature/included_template_parts```. 
+**```feature/{new_branch}```** All new features for Page Builder should be in feature branches. When creating a feature branch, prefix your branch name with ```feature/```, e.g. ```feature/included_template_parts```.
 
 **```hotfix/{new_hotfix}```** Any bug fixes should be in hotfix branches. These need to merge into both ```master``` and ```develop```.
 

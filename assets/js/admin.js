@@ -9,9 +9,9 @@ selected.each(function(index){
 	}
 });
 
-jQuery("select.wds-simple-page-builder-template-select").change(function () {
+jQuery("select.simple-page-builder-template-select").change(function () {
 	var $this = jQuery(this);
-	var title = $this.closest( '.cmb-row.cmb-repeatable-grouping' );  
+	var title = $this.closest( '.cmb-row.cmb-repeatable-grouping' );
 	var new_title = $this.find( 'option:selected').text();
 
 	title.find( '.cmb-group-title').html( new_title );
@@ -19,10 +19,10 @@ jQuery("select.wds-simple-page-builder-template-select").change(function () {
 
 jQuery(document).ready(function($){
 	// Get all the template select boxes
-	 jQuery("select.wds-simple-page-builder-template-select :selected").each(function( k, v ) {
+	 jQuery("select.simple-page-builder-template-select :selected").each(function( k, v ) {
 		var title = jQuery( this ).closest( '.cmb-row.cmb-repeatable-grouping' );
 		var new_title = jQuery( this ).text();
-	
+
 		title.find( '.cmb-group-title').html( new_title );
 	 });
 });
